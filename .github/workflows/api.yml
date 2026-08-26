@@ -1,0 +1,32 @@
+name: API CI/CD Pipeline
+
+# O workflow será disparado a cada push ou pull request na branch 'main'
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Faz o checkout do código do repositório para a máquina virtual do GitHub
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Configura o ambiente com a versão correta do Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20 # Versão estável do Node recomendada para os hashes do projeto
+        cache: 'npm'     # Otimiza o pipeline fazendo cache dos pacotes do node_modules
+
+    # 3. Instala as dependências de forma limpa baseada no package-lock.json
+    - name: Install dependencies
+      run: npm ci
+
+    # 4. Executa a suíte de testes automatizados
+    - name: Run Tests
+      run: npm test
